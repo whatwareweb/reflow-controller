@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "author": "The Bin - Hack Club",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-pi-pico-w", "id": "pico", "top": 409.55, "left": 301.15, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "wokwi-lcd1602-0", "top": 214.63, "left": -3.2, "attrs": {} },
+    { "type": "wokwi-buzzer", "id": "wokwi-buzzer-0", "top": 430, "left": 0, "attrs": {} },
+    { "type": "wokwi-ky-040", "id": "wokwi-ky-040-0", "top": 433.7, "left": 95.2, "attrs": {} },
+    {
+      "type": "wokwi-ds1307",
+      "id": "wokwi-ds1307-0",
+      "top": 589.8,
+      "left": 19.3,
+      "attrs": { "initTime": "0" }
+    },
+    {
+      "type": "wokwi-relay-module",
+      "id": "wokwi-relay-module-0",
+      "top": 653,
+      "left": 259.2,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ntc-temperature-sensor",
+      "id": "wokwi-ntc-temperature-sensor-0",
+      "top": 770.6,
+      "left": -10.2,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "wokwi-membrane-keypad-0",
+      "top": 746.8,
+      "left": 168.8,
+      "attrs": {}
+    }
+  ],
+  "connections": [ [ "pico:GP0", "$serialMonitor:RX", "", [] ], [ "pico:GP1", "$serialMonitor:TX", "", [] ] ],
+  "dependencies": {}
+}
