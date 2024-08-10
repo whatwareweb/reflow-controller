@@ -1,41 +1,47 @@
 {
   "version": 1,
-  "author": "The Bin - Hack Club",
+  "author": "whatwareweb",
   "editor": "wokwi",
   "parts": [
-    { "type": "board-pi-pico-w", "id": "pico", "top": 409.55, "left": 301.15, "attrs": {} },
-    { "type": "wokwi-lcd1602", "id": "wokwi-lcd1602-0", "top": 214.63, "left": -3.2, "attrs": {} },
-    { "type": "wokwi-buzzer", "id": "wokwi-buzzer-0", "top": 430, "left": 0, "attrs": {} },
-    { "type": "wokwi-ky-040", "id": "wokwi-ky-040-0", "top": 433.7, "left": 95.2, "attrs": {} },
     {
-      "type": "wokwi-ds1307",
-      "id": "wokwi-ds1307-0",
-      "top": 589.8,
-      "left": 19.3,
-      "attrs": { "initTime": "0" }
-    },
-    {
-      "type": "wokwi-relay-module",
-      "id": "wokwi-relay-module-0",
-      "top": 653,
-      "left": 259.2,
+      "type": "board-pi-pico-w",
+      "id": "pico",
+      "top": 260.35,
+      "left": 469.05,
+      "rotate": 90,
       "attrs": {}
     },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": 265.6,
+      "left": 677.6,
+      "attrs": { "pins": "i2c" }
+    },
+    { "type": "wokwi-buzzer", "id": "buzzer", "top": 430, "left": 0, "attrs": {} },
+    { "type": "wokwi-relay-module", "id": "relay", "top": 441.8, "left": 182.4, "attrs": {} },
     {
       "type": "wokwi-ntc-temperature-sensor",
-      "id": "wokwi-ntc-temperature-sensor-0",
-      "top": 770.6,
-      "left": -10.2,
+      "id": "ntc-thermistor",
+      "top": 597.8,
+      "left": 57,
       "attrs": {}
     },
-    {
-      "type": "wokwi-membrane-keypad",
-      "id": "wokwi-membrane-keypad-0",
-      "top": 746.8,
-      "left": 168.8,
-      "attrs": {}
-    }
+    { "type": "wokwi-membrane-keypad", "id": "keypad", "top": -117.2, "left": 351.2, "attrs": {} }
   ],
-  "connections": [ [ "pico:GP0", "$serialMonitor:RX", "", [] ], [ "pico:GP1", "$serialMonitor:TX", "", [] ] ],
+  "connections": [
+    [ "pico:GP6", "keypad:C4", "blue", [ "v-8", "h0" ] ],
+    [ "pico:GP7", "keypad:C3", "blue", [ "v-12", "h0" ] ],
+    [ "pico:GP8", "keypad:C2", "blue", [ "v-16", "h0" ] ],
+    [ "pico:GP9", "keypad:C1", "blue", [ "v-20", "h0" ] ],
+    [ "pico:GP10", "keypad:R4", "purple", [ "v-24", "h0" ] ],
+    [ "pico:GP11", "keypad:R3", "purple", [ "v-28", "h0" ] ],
+    [ "pico:GP12", "keypad:R2", "purple", [ "v-32", "h0" ] ],
+    [ "pico:GP13", "keypad:R1", "purple", [ "v-36", "h0" ] ],
+    [ "lcd:GND", "pico:GND.8", "black", [ "h-38.4", "v115.2", "h-67.2" ] ],
+    [ "lcd:VCC", "pico:VBUS", "red", [ "h-28.8", "v115.3", "h-57.6" ] ],
+    [ "pico:GP0", "lcd:SCL", "green", [ "v-9.6", "h19.2", "v9.6" ] ],
+    [ "pico:GP1", "lcd:SDA", "green", [ "v-19.2", "h38.4", "v9.6" ] ]
+  ],
   "dependencies": {}
 }
