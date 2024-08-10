@@ -36,13 +36,14 @@ def scan_keypad():
     
     return keys
 
-def wait_for_no_input():
-    while len(scan_keypad()) > 0:
-        pass
 
-def wait_for_input():
+async def wait_for_no_input():
+    while len(scan_keypad()) > 0:
+        await uasyncio.sleep_ms(0)
+
+async def wait_for_input():
     while len(scan_keypad()) < 1:
-        pass
+        await uasyncio.sleep_ms(0)
 
     return scan_keypad()
 

@@ -6,8 +6,8 @@
     {
       "type": "wokwi-pi-pico",
       "id": "pico",
-      "top": 260.35,
-      "left": 469.05,
+      "top": 259.9,
+      "left": 468.45,
       "rotate": 90,
       "attrs": {}
     },
