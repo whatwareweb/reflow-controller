@@ -1,0 +1,20 @@
+{
+    "menu": [
+        {
+            "name": "Select Profile",
+            "children": {}
+        },
+        {
+            "name": "Create Profile",
+            "children": {}
+        },
+        {
+            "name": "DwnLd Profiles",
+            "children": {}
+        },
+        {
+            "name": "Select Profile",
+            "children": {}
+        }
+    ]
+}

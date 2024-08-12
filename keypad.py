@@ -51,4 +51,4 @@ async def get_input():
     await wait_for_no_input()
     keys = await wait_for_input()
     await wait_for_no_input()
-    return keys
+    return keys[0]
