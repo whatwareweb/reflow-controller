@@ -21,55 +21,80 @@ menu = None
 with open("menu.json") as f:
     menu = json.load(f)["children"]
 
-current_menu = menu
+global submenu
+global menu_pos
 submenu = [menu]
+menu_pos = []
 
+global pos
+global cursor_pos
 pos = 0
 cursor_pos = 0
 
-
-async def menu_control():
+def menu_back():
+    global submenu
+    global menu_pos
     global pos
     global cursor_pos
-    global current_menu
+    submenu.pop()
+    current_menu_pos = menu_pos.pop()
+    print(current_menu_pos)
+    pos = current_menu_pos[0]
+    cursor_pos = current_menu_pos[1]
+
+menu_functions = {
+    "back": menu_back,
+    "backlight_on": lcd.backlight_on,
+    "backlight_off": lcd.backlight_off
+}
+
+
+async def menu_control():
     global submenu
+    global menu_pos
+    global pos
+    global cursor_pos
     while True:
         lcd.move_to(0, cursor_pos)
         lcd.putchar(">")
         lcd.move_to(1, 0)
-        lcd.putstr(current_menu[pos]["name"])
+        lcd.putstr(submenu[-1][pos]["name"])
         lcd.move_to(1, 1)
-        lcd.putstr(current_menu[pos + 1]["name"])
+        lcd.putstr(submenu[-1][pos + 1]["name"])
         input = await keypad.get_input()
 
-        if int(input) == 8:
+        if (int(input) == 8):
             cursor_pos += 1
 
-        if int(input) == 2:
+        if (int(input) == 2):
             cursor_pos -= 1
 
-        if int(input) == 5:
-            print(current_menu[pos + cursor_pos]["children"])
-            print(current_menu[pos + cursor_pos])
-            if len(current_menu[pos + cursor_pos]["children"]) > 0:
-                current_menu = current_menu[pos + cursor_pos]["children"]
+        if (int(input) == 5):
+            if (len(submenu[-1][pos + cursor_pos]["children"]) > 0):
+                submenu.append(submenu[-1][pos + cursor_pos]["children"])
+                menu_pos.append([pos, cursor_pos])
                 pos = 0
                 cursor_pos = 0
+            else:
+                for function in (submenu[-1][pos + cursor_pos]["function"]):
+                    menu_functions[function]()
 
-        if cursor_pos > 1:
+
+
+        if (cursor_pos > 1):
             pos += 1
             cursor_pos = 1
 
-        if cursor_pos < 0:
+        if (cursor_pos < 0):
             pos -= 1
             cursor_pos = 0
 
-        if pos + cursor_pos >= len(current_menu):
+        if (pos + cursor_pos >= len(submenu[-1])):
             pos = 0
             cursor_pos = 0
 
-        if pos + cursor_pos < 0:
-            pos = len(current_menu) - 2
+        if (pos + cursor_pos < 0):
+            pos = len(submenu[-1]) - 2
             cursor_pos = 1
 
         lcd.clear()

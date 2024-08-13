@@ -25,19 +25,19 @@
                         {
                             "name": "On",
                             "children": [],
-                            "function": "backlight_on"
+                            "function": ["backlight_on", "back"]
                         },
                         {
                             "name": "Off",
                             "children": [],
-                            "function": "backlight_off"
+                            "function": ["backlight_off", "back"]
                         }
                     ]
                 },
                 {
                     "name": "Back",
                     "children": [],
-                    "function": "back"
+                    "function": ["back"]
                 }
             ]
         }
