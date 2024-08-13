@@ -1,0 +1,39 @@
+{
+	"profiles": [
+		{
+			"name": "MG chem 4860P",
+			"profile": [
+				{
+					"type": "heat",
+					"temp": 125
+				},
+				{
+					"type": "hold",
+					"temp": 125,
+					"time": 30
+				},
+				{
+					"type": "hold",
+					"temp": 140,
+					"time": 120
+				},
+				{
+					"type": "heat",
+					"temp": 215
+				},
+				{
+					"type": "hold",
+					"temp": 215,
+					"time": 75
+				},
+				{
+					"type": "cool",
+					"temp": "125"
+				},
+				{
+					"type": "end"
+				}
+			]
+		}
+	]
+}

@@ -38,7 +38,6 @@ def menu_back():
     global cursor_pos
     submenu.pop()
     current_menu_pos = menu_pos.pop()
-    print(current_menu_pos)
     pos = current_menu_pos[0]
     cursor_pos = current_menu_pos[1]
 
@@ -70,12 +69,12 @@ async def menu_control():
             cursor_pos -= 1
 
         if (int(input) == 5):
-            if (len(submenu[-1][pos + cursor_pos]["children"]) > 0):
+            if (("children" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["children"]) > 0)):
                 submenu.append(submenu[-1][pos + cursor_pos]["children"])
                 menu_pos.append([pos, cursor_pos])
                 pos = 0
                 cursor_pos = 0
-            else:
+            elif (("function" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["function"]) > 0)):
                 for function in (submenu[-1][pos + cursor_pos]["function"]):
                     menu_functions[function]()
 
