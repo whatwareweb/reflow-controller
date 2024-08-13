@@ -1,5 +1,5 @@
 {
-    "menu": [
+    "children": [
         {
             "name": "Select Profile",
             "children": []
@@ -16,7 +16,7 @@
             "name": "Settings",
             "children": [
                 {
-                    "name": "Wi-Fi Connection",
+                    "name": "Wi-Fi",
                     "children": []
                 },
                 {
@@ -25,14 +25,19 @@
                         {
                             "name": "On",
                             "children": [],
-                            "function": "backlightOn"
+                            "function": "backlight_on"
                         },
                         {
                             "name": "Off",
                             "children": [],
-                            "function": "backlightOff"
+                            "function": "backlight_off"
                         }
                     ]
+                },
+                {
+                    "name": "Back",
+                    "children": [],
+                    "function": "back"
                 }
             ]
         }
