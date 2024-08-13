@@ -52,3 +52,17 @@ async def get_input():
     keys = await wait_for_input()
     await wait_for_no_input()
     return keys[0]
+
+def get_input_sync():
+    while len(scan_keypad()) > 0:
+        pass
+
+    while len(scan_keypad()) < 1:
+        pass
+
+    keys = scan_keypad()
+    
+    while len(scan_keypad()) > 0:
+        pass
+
+    return keys[0]

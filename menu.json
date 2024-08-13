@@ -2,19 +2,39 @@
     "menu": [
         {
             "name": "Select Profile",
-            "children": {}
+            "children": []
         },
         {
             "name": "Create Profile",
-            "children": {}
+            "children": []
         },
         {
             "name": "DwnLd Profiles",
-            "children": {}
+            "children": []
         },
         {
-            "name": "Select Profile",
-            "children": {}
+            "name": "Settings",
+            "children": [
+                {
+                    "name": "Wi-Fi Connection",
+                    "children": []
+                },
+                {
+                    "name": "Backlight",
+                    "children": [
+                        {
+                            "name": "On",
+                            "children": [],
+                            "function": "backlightOn"
+                        },
+                        {
+                            "name": "Off",
+                            "children": [],
+                            "function": "backlightOff"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
