@@ -41,66 +41,119 @@ def menu_back():
     pos = current_menu_pos[0]
     cursor_pos = current_menu_pos[1]
 
+def clear_vars():
+    global submenu
+    global menu_pos
+    global pos
+    global cursor_pos
+    submenu = [menu]
+    menu_pos = []
+    pos = 0
+    cursor_pos = 0
+
 menu_functions = {
     "back": menu_back,
     "backlight_on": lcd.backlight_on,
-    "backlight_off": lcd.backlight_off
+    "backlight_off": lcd.backlight_off,
+    "clear_vars": clear_vars,
+    "select_profile": print
+
 }
 
+process_status = "main_menu"
 
 async def menu_control():
     global submenu
     global menu_pos
     global pos
     global cursor_pos
+    global process_status
     while True:
-        lcd.move_to(0, cursor_pos)
-        lcd.putchar(">")
-        lcd.move_to(1, 0)
-        lcd.putstr(submenu[-1][pos]["name"])
-        lcd.move_to(1, 1)
-        lcd.putstr(submenu[-1][pos + 1]["name"])
-        input = await keypad.get_input()
+        if (process_status == "main_menu"):
+            lcd.move_to(0, cursor_pos)
+            lcd.putchar(">")
+            lcd.move_to(1, 0)
+            lcd.putstr(submenu[-1][pos]["name"])
+            lcd.move_to(1, 1)
+            lcd.putstr(submenu[-1][pos + 1]["name"])
+            input = await keypad.get_input()
 
-        if (int(input) == 8):
-            cursor_pos += 1
+            if (int(input) == 8):
+                cursor_pos += 1
 
-        if (int(input) == 2):
-            cursor_pos -= 1
+            if (int(input) == 2):
+                cursor_pos -= 1
 
-        if (int(input) == 5):
-            if (("children" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["children"]) > 0)):
-                submenu.append(submenu[-1][pos + cursor_pos]["children"])
-                menu_pos.append([pos, cursor_pos])
-                pos = 0
-                cursor_pos = 0
-            elif (("function" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["function"]) > 0)):
-                for function in (submenu[-1][pos + cursor_pos]["function"]):
-                    menu_functions[function]()
+            if (int(input) == 5):
+                if (("children" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["children"]) > 0)):
+                    submenu.append(submenu[-1][pos + cursor_pos]["children"])
+                    menu_pos.append([pos, cursor_pos])
+                    pos = 0
+                    cursor_pos = 0
+                elif (("function" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["function"]) > 0)):
+                    for function in (submenu[-1][pos + cursor_pos]["function"]):
+                        menu_functions[function]()
+            
+            update_menu()
+
+async def profile_select_menu():
+    global menu_pos
+    global pos
+    global cursor_pos
+    global process_status
+    while True:
+        if (process_status == "profile_select"):
+            lcd.move_to(0, cursor_pos)
+            lcd.putchar(">")
+            lcd.move_to(1, 0)
+            lcd.putstr(submenu[-1][pos]["name"])
+            lcd.move_to(1, 1)
+            lcd.putstr(submenu[-1][pos + 1]["name"])
+            input = await keypad.get_input()
+
+            if (int(input) == 8):
+                cursor_pos += 1
+
+            if (int(input) == 2):
+                cursor_pos -= 1
+
+            if (int(input) == 5):
+                if (("children" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["children"]) > 0)):
+                    submenu.append(submenu[-1][pos + cursor_pos]["children"])
+                    menu_pos.append([pos, cursor_pos])
+                    pos = 0
+                    cursor_pos = 0
+                elif (("function" in submenu[-1][pos + cursor_pos].keys()) and (len(submenu[-1][pos + cursor_pos]["function"]) > 0)):
+                    for function in (submenu[-1][pos + cursor_pos]["function"]):
+                        menu_functions[function]()
+            
+            update_menu()
+
+
+def update_menu():
+    global pos
+    global cursor_pos
+    
+    if (cursor_pos > 1):
+        pos += 1
+        cursor_pos = 1
+
+    if (cursor_pos < 0):
+        pos -= 1
+        cursor_pos = 0
+
+    if (pos + cursor_pos >= len(submenu[-1])):
+        pos = 0
+        cursor_pos = 0
+
+    if (pos + cursor_pos < 0):
+        pos = len(submenu[-1]) - 2
+        cursor_pos = 1
+
+    lcd.clear()
 
 
 
-        if (cursor_pos > 1):
-            pos += 1
-            cursor_pos = 1
-
-        if (cursor_pos < 0):
-            pos -= 1
-            cursor_pos = 0
-
-        if (pos + cursor_pos >= len(submenu[-1])):
-            pos = 0
-            cursor_pos = 0
-
-        if (pos + cursor_pos < 0):
-            pos = len(submenu[-1]) - 2
-            cursor_pos = 1
-
-        lcd.clear()
-
-
-loop = uasyncio.get_event_loop()
-
-loop.create_task(menu_control())
-
-loop.run_forever()
+menu_loop = uasyncio.get_event_loop()
+menu_loop.create_task(menu_control())
+menu_loop.run_forever()

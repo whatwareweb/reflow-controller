@@ -1,45 +1,47 @@
 {
-    "children": [
-        {
-            "name": "Select Profile",
-            "children": []
-        },
-        {
-            "name": "Create Profile",
-            "children": []
-        },
-        {
-            "name": "DwnLd Profiles",
-            "children": []
-        },
-        {
-            "name": "Settings",
-            "children": [
-                {
-                    "name": "Wi-Fi",
-                    "children": []
-                },
-                {
-                    "name": "Backlight",
-                    "children": [
-                        {
-                            "name": "On",
-                            "children": [],
-                            "function": ["backlight_on", "back"]
-                        },
-                        {
-                            "name": "Off",
-                            "children": [],
-                            "function": ["backlight_off", "back"]
-                        }
-                    ]
-                },
-                {
-                    "name": "Back",
-                    "children": [],
-                    "function": ["back"]
-                }
-            ]
-        }
-    ]
+	"children": [
+		{
+			"name": "Select Profile",
+			"function": [
+				"clear_vars",
+				"select_profile"
+			]
+		},
+		{
+			"name": "DwnLd Profiles"
+		},
+		{
+			"name": "Settings",
+			"children": [
+				{
+					"name": "Backlight",
+					"children": [
+						{
+							"name": "On",
+							"function": [
+								"backlight_on",
+								"back"
+							]
+						},
+						{
+							"name": "Off",
+							"function": [
+								"backlight_off",
+								"back"
+							]
+						}
+					]
+				},
+				{
+					"name": "Wi-Fi Network"
+				},
+				{
+					"name": "Back",
+					"function": [
+						"back"
+					]
+				}
+			]
+		}
+	]
 }
