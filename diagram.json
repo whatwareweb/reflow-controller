@@ -4,10 +4,10 @@
   "editor": "wokwi",
   "parts": [
     {
-      "type": "wokwi-pi-pico",
+      "type": "board-pi-pico-w",
       "id": "pico",
-      "top": 259.9,
-      "left": 468.45,
+      "top": 260.35,
+      "left": 469.05,
       "rotate": 90,
       "attrs": {}
     },
