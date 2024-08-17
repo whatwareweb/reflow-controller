@@ -12,6 +12,7 @@ import keypad
 import network
 import socket
 
+from ntp import Ntp
 
 lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
 LCD_I2C_ADDR = lcd_i2c.scan()[0]
@@ -185,31 +186,16 @@ def update_menu(length):
 
     lcd.clear()
 
-NTP_DELTA = 2208988800
-host = "time.nist.gov"
+Ntp.set_datetime_callback(machine.RTC().datetime)
+Ntp.set_hosts(("time.nist.gov"))
 async def set_time_ntp():
     while True:
         if (wlan.isconnected()):
-            NTP_QUERY = bytearray(48)
-            NTP_QUERY[0] = 0x1B
-            addr = socket.getaddrinfo(host, 123)[0][-1]
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            try:
-                s.settimeout(1)
-                res = s.sendto(NTP_QUERY, addr)
-                msg = s.recv(48)
-            finally:
-                s.close()
-
-            val = struct.unpack("!I", msg[40:44])[0]
-            tm = val - NTP_DELTA    
-            t = time.gmtime(tm)
-            print(t)
-            rtc.datetime((t[0],t[1],t[2],t[6]+1,t[3],t[4],t[5],0))
-
-            await uasyncio.sleep(300) # wait 5 minutes before pinging nist again
+            Ntp.rtc_sync()
+            await uasyncio.sleep(300) # wait 5 minutes before pinging again
         else:
             await uasyncio.sleep(1)
+
 
 async def connect(network_id):
     global wlan
