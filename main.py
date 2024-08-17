@@ -3,16 +3,14 @@ from machine import I2C, Pin
 import time
 import uasyncio
 
-import json
+import ujson as json
 
 from lcd_api import LcdApi
 from pico_i2c_lcd import I2cLcd
 import keypad
 
 import network
-import socket
-
-from ntp import Ntp
+import async_urequests as requests
 
 lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
 LCD_I2C_ADDR = lcd_i2c.scan()[0]
@@ -186,16 +184,18 @@ def update_menu(length):
 
     lcd.clear()
 
-Ntp.set_datetime_callback(machine.RTC().datetime)
-Ntp.set_hosts(("time.nist.gov"))
-async def set_time_ntp():
+
+http_host = "http://worldtimeapi.org/api/timezone/America/Chicago" # change last 2 paths to change timezone
+async def set_time_http():
     while True:
         if (wlan.isconnected()):
-            Ntp.rtc_sync()
+            print("got connection")
+            response = await requests.get(http_host)
+            print(response)
+
             await uasyncio.sleep(300) # wait 5 minutes before pinging again
         else:
             await uasyncio.sleep(1)
-
 
 async def connect(network_id):
     global wlan
@@ -214,7 +214,7 @@ menu_loop = uasyncio.get_event_loop()
 if (len(networks) > 0):
     menu_loop.create_task(connect(0))
 
-menu_loop.create_task(set_time_ntp())
+menu_loop.create_task(set_time_http())
 menu_loop.create_task(menu_control())
 menu_loop.create_task(profile_select_menu())
 
