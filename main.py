@@ -1,24 +1,23 @@
 import machine
 from machine import I2C, Pin
-
 import time
-
 import uasyncio
 
 import json
 
 from lcd_api import LcdApi
 from pico_i2c_lcd import I2cLcd
-
 import keypad
 
 import network
+import socket
 
 
 lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
 LCD_I2C_ADDR = lcd_i2c.scan()[0]
 lcd = I2cLcd(lcd_i2c, LCD_I2C_ADDR, 2, 16)
 
+led = Pin("LED", Pin.OUT)
 
 menu = None
 profiles = None
@@ -34,6 +33,11 @@ with open("profiles.json") as f:
 with open("networks.json") as f:
     networks = json.load(f)["networks"]
 
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+
+global rtc
+rtc = machine.RTC()
 
 global submenu
 global menu_pos
@@ -46,9 +50,9 @@ pos = 0
 cursor_pos = 0
 
 global process_status
-process_status = "profile_select"
+process_status = "main_menu"
 
-def draw_screen(l1text, l2text, cursor_position_draw):
+def draw_menu(l1text, l2text, cursor_position_draw):
     lcd.move_to(0, cursor_position_draw)
     lcd.putchar(">")
     lcd.move_to(1, 0)
@@ -97,7 +101,7 @@ async def menu_control():
     global process_status
     while True:
         if (process_status == "main_menu"):
-            draw_screen(submenu[-1][pos]["name"], submenu[-1][pos + 1]["name"], cursor_pos)
+            draw_menu(submenu[-1][pos]["name"], submenu[-1][pos + 1]["name"], cursor_pos)
             input = await keypad.get_input()
 
             if (int(input) == 8):
@@ -127,7 +131,7 @@ async def profile_select_menu():
     global process_status
     while True:
         if (process_status == "profile_select"):
-            draw_screen(profiles[pos]["name"], profiles[pos + 1]["name"], cursor_pos)
+            draw_menu(profiles[pos]["name"], profiles[pos + 1]["name"], cursor_pos)
             input = await keypad.get_input()
 
             if (int(input) == 8):
@@ -181,21 +185,51 @@ def update_menu(length):
 
     lcd.clear()
 
+NTP_DELTA = 2208988800
+host = "time.nist.gov"
+async def set_time_ntp():
+    while True:
+        if (wlan.isconnected()):
+            NTP_QUERY = bytearray(48)
+            NTP_QUERY[0] = 0x1B
+            addr = socket.getaddrinfo(host, 123)[0][-1]
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            try:
+                s.settimeout(1)
+                res = s.sendto(NTP_QUERY, addr)
+                msg = s.recv(48)
+            finally:
+                s.close()
 
-async def connect():
-    #Connect to WLAN
-    wlan = network.WLAN(network.STA_IF)
-    wlan.active(True)
-    print("connecting to network " + networks[0]["ssid"])
-    wlan.connect(networks[0]["ssid"], networks[0]["pass"])
+            val = struct.unpack("!I", msg[40:44])[0]
+            tm = val - NTP_DELTA    
+            t = time.gmtime(tm)
+            print(t)
+            rtc.datetime((t[0],t[1],t[2],t[6]+1,t[3],t[4],t[5],0))
+
+            await uasyncio.sleep(300) # wait 5 minutes before pinging nist again
+        else:
+            await uasyncio.sleep(1)
+
+async def connect(network_id):
+    global wlan
+    print("connecting to network " + networks[network_id]["ssid"])
+    wlan.connect(networks[0]["ssid"], networks[network_id]["pass"])
+    wlan.ifconfig()
     while wlan.isconnected() == False:
-        print('Waiting for connection...')
-        await uasyncio.sleep_ms(200)
-    print(wlan.ifconfig())
+        led.toggle()
+        await uasyncio.sleep_ms(100)
+    print("connected")
+    led.on()
 
 
 menu_loop = uasyncio.get_event_loop()
-menu_loop.create_task(connect())
+
+if (len(networks) > 0):
+    menu_loop.create_task(connect(0))
+
+menu_loop.create_task(set_time_ntp())
 menu_loop.create_task(menu_control())
 menu_loop.create_task(profile_select_menu())
+
 menu_loop.run_forever()
