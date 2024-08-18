@@ -10,7 +10,6 @@ from pico_i2c_lcd import I2cLcd
 import keypad
 
 import network
-import async_urequests as requests
 
 lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
 LCD_I2C_ADDR = lcd_i2c.scan()[0]
@@ -123,6 +122,15 @@ async def menu_control():
         else:
             await uasyncio.sleep_ms(0)
 
+async def run_profile(profile):
+    for obj in profile:
+        if (obj["type"] == "heat"):
+            pass
+        if (obj["type"] == "hold"):
+            pass
+        if (obj["type"] == "cool"):
+            pass
+
 async def profile_select_menu():
     global menu_pos
     global pos
@@ -151,7 +159,7 @@ async def profile_select_menu():
                     lcd.putstr("A:Start, B:Exit")
                     input = await keypad.get_input()
                     if (input == 'A'):
-                        pass
+                        await run_profile(profiles[pos + cursor_pos]["profile"])
                     elif (input == 'B'):
                         process_status = "main_menu"
                         clear_vars()
@@ -185,18 +193,6 @@ def update_menu(length):
     lcd.clear()
 
 
-http_host = "http://worldtimeapi.org/api/timezone/America/Chicago" # change last 2 paths to change timezone
-async def set_time_http():
-    while True:
-        if (wlan.isconnected()):
-            print("got connection")
-            response = await requests.get(http_host)
-            print(response)
-
-            await uasyncio.sleep(300) # wait 5 minutes before pinging again
-        else:
-            await uasyncio.sleep(1)
-
 async def connect(network_id):
     global wlan
     print("connecting to network " + networks[network_id]["ssid"])
@@ -214,7 +210,6 @@ menu_loop = uasyncio.get_event_loop()
 if (len(networks) > 0):
     menu_loop.create_task(connect(0))
 
-menu_loop.create_task(set_time_http())
 menu_loop.create_task(menu_control())
 menu_loop.create_task(profile_select_menu())
 
