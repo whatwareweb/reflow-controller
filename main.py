@@ -1,6 +1,7 @@
 import machine
-from machine import I2C, Pin
+from machine import I2C, Pin, ADC
 import time
+import math
 import uasyncio
 
 import ujson as json
@@ -16,6 +17,12 @@ LCD_I2C_ADDR = lcd_i2c.scan()[0]
 lcd = I2cLcd(lcd_i2c, LCD_I2C_ADDR, 2, 16)
 
 led = Pin("LED", Pin.OUT)
+
+ntc = ADC(Pin(27))
+ntc_beta = 3950
+
+relay = Pin(28, Pin.OUT)
+relay.off()
 
 menu = None
 profiles = None
@@ -122,12 +129,35 @@ async def menu_control():
         else:
             await uasyncio.sleep_ms(0)
 
+
 async def run_profile(profile):
+    lcd.clear()
     for obj in profile:
         if (obj["type"] == "heat"):
-            pass
+            relay.on()
+            lcd.move_to(0, 0)
+            lcd.putstr("Heating->")
+            lcd.putstr(str(obj["temp"]))
+            lcd.putstr("C")
+            while ((1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15) < obj["temp"]):
+                lcd.move_to(0,1)
+                lcd.putstr(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15, 1)))
+                lcd.putstr("C")
+                await uasyncio.sleep_ms(0)
         if (obj["type"] == "hold"):
-            pass
+            lcd.move_to(0, 0)
+            lcd.putstr("Holding ")
+            lcd.putstr(str(obj["temp"]))
+            lcd.putstr("C ")
+            lcd.putstr(str(obj["time"]))
+            lcd.putstr("s")
+            current_time = rtc.datetime()
+            while (True):
+                lcd.move_to(0,1)
+                lcd.putstr(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15, 1)))
+                lcd.putstr("C")
+                await uasyncio.sleep(0)
+                print(rtc.datetime())
         if (obj["type"] == "cool"):
             pass
 
