@@ -31,38 +31,6 @@
 					"temp": 125
 				}
 			]
-		},
-		{
-			"name": "Testing",
-			"profile": [
-				{
-					"type": "heat",
-					"temp": 50
-				},
-				{
-					"type": "hold",
-					"temp": 50,
-					"time": 30
-				},
-				{
-					"type": "hold",
-					"temp": 55,
-					"time": 10
-				},
-				{
-					"type": "heat",
-					"temp": 70
-				},
-				{
-					"type": "hold",
-					"temp": 70,
-					"time": 15
-				},
-				{
-					"type": "cool",
-					"temp": 25
-				}
-			]
 		}
 	]
 }
