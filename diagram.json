@@ -4,7 +4,7 @@
   "editor": "wokwi",
   "parts": [
     {
-      "type": "board-pi-pico-w",
+      "type": "wokwi-pi-pico",
       "id": "pico",
       "top": 260.35,
       "left": 469.05,

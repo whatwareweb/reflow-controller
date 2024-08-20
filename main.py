@@ -1,5 +1,6 @@
 import machine
 from machine import I2C, Pin, ADC
+import datetime
 import time
 import math
 import uasyncio
@@ -10,7 +11,7 @@ from lcd_api import LcdApi
 from pico_i2c_lcd import I2cLcd
 import keypad
 
-import network
+#import network
 
 lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
 LCD_I2C_ADDR = lcd_i2c.scan()[0]
@@ -38,8 +39,10 @@ with open("profiles.json") as f:
 with open("networks.json") as f:
     networks = json.load(f)["networks"]
 
+'''
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
+'''
 
 global rtc
 rtc = machine.RTC()
@@ -55,7 +58,7 @@ pos = 0
 cursor_pos = 0
 
 global process_status
-process_status = "main_menu"
+process_status = "profile_select"
 
 def draw_menu(l1text, l2text, cursor_position_draw):
     lcd.move_to(0, cursor_position_draw)
@@ -89,6 +92,9 @@ def clear_vars():
     menu_pos = []
     pos = 0
     cursor_pos = 0
+
+def zfl(s, width):
+    return '{:0>{w}}'.format(s, w=width)
 
 menu_functions = {
     "back": menu_back,
@@ -141,23 +147,28 @@ async def run_profile(profile):
             lcd.putstr("C")
             while ((1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15) < obj["temp"]):
                 lcd.move_to(0,1)
-                lcd.putstr(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15, 1)))
+                lcd.putstr(zfl(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)), 3))
                 lcd.putstr("C")
                 await uasyncio.sleep_ms(0)
         if (obj["type"] == "hold"):
+            start_time = rtc.datetime()
             lcd.move_to(0, 0)
             lcd.putstr("Holding ")
-            lcd.putstr(str(obj["temp"]))
+            lcd.putstr(zfl(str(obj["temp"]), 3))
             lcd.putstr("C ")
-            lcd.putstr(str(obj["time"]))
+            lcd.move_to(5, 1)
+            lcd.putstr(zfl(str(obj["time"]), 3))
             lcd.putstr("s")
-            current_time = rtc.datetime()
-            while (True):
+            while (time.mktime(rtc.datetime()) - time.mktime(start_time) < obj["time"]):
+                current_temp = round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)
+                time_passed = (datetime.datetime(rtc.datetime()) - datetime.datetime(start_time)).total_seconds()
                 lcd.move_to(0,1)
-                lcd.putstr(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15, 1)))
+                lcd.putstr(zfl(str(current_temp), 3))
                 lcd.putstr("C")
-                await uasyncio.sleep(0)
-                print(rtc.datetime())
+                lcd.move_to(5, 1)
+                lcd.putstr(zfl(str(obj["time"] - time_passed), 3))
+                print(time_passed)
+                await uasyncio.sleep_ms(200)
         if (obj["type"] == "cool"):
             pass
 
@@ -222,7 +233,7 @@ def update_menu(length):
 
     lcd.clear()
 
-
+'''
 async def connect(network_id):
     global wlan
     print("connecting to network " + networks[network_id]["ssid"])
@@ -233,13 +244,13 @@ async def connect(network_id):
         await uasyncio.sleep_ms(100)
     print("connected")
     led.on()
-
+'''
 
 menu_loop = uasyncio.get_event_loop()
-
+'''
 if (len(networks) > 0):
     menu_loop.create_task(connect(0))
-
+'''
 menu_loop.create_task(menu_control())
 menu_loop.create_task(profile_select_menu())
 
