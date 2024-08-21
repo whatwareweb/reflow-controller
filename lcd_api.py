@@ -1,3 +1,5 @@
+# Pico i2c lcd library from https://github.com/T-622/RPI-PICO-I2C-LCD/, MIT license
+
 import time
 
 class LcdApi:

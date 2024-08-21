@@ -19,12 +19,76 @@
 				},
 				{
 					"type": "heat",
-					"temp": 215
+					"temp": 225
 				},
 				{
 					"type": "hold",
-					"temp": 215,
-					"time": 75
+					"temp": 225,
+					"time": 10
+				},
+				{
+					"type": "cool",
+					"temp": 125
+				}
+			]
+		},
+		{
+			"name": "Kester EP256",
+			"profile": [
+				{
+					"type": "heat",
+					"temp": 150
+				},
+				{
+					"type": "hold",
+					"temp": 160,
+					"time": 30
+				},
+				{
+					"type": "hold",
+					"temp": 170,
+					"time": 90
+				},
+				{
+					"type": "heat",
+					"temp": 225
+				},
+				{
+					"type": "hold",
+					"temp": 225,
+					"time": 10
+				},
+				{
+					"type": "cool",
+					"temp": 125
+				}
+			]
+		},
+		{
+			"name": "MG 4900p LF",
+			"profile": [
+				{
+					"type": "heat",
+					"temp": 125
+				},
+				{
+					"type": "hold",
+					"temp": 125,
+					"time": 60
+				},
+				{
+					"type": "hold",
+					"temp": 135,
+					"time": 60
+				},
+				{
+					"type": "heat",
+					"temp": 225
+				},
+				{
+					"type": "hold",
+					"temp": 225,
+					"time": 10
 				},
 				{
 					"type": "cool",
