@@ -1,5 +1,6 @@
 # reflow-controller
 pi pico project to control reflow oven
+
 This project is currently under very heavy development, so expect some bugs as of now while i do more testing
 
 ## how to use
