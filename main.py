@@ -95,7 +95,7 @@ def menu_back():
 
 def select_profile():
     global process_status
-    process_status = "main_menu"
+    process_status = "profile_select"
 
 def clear_vars():
     global submenu
