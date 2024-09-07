@@ -6,24 +6,18 @@
     {
       "type": "wokwi-pi-pico",
       "id": "pico",
-      "top": 260.35,
-      "left": 469.05,
+      "top": 259.9,
+      "left": 468.45,
       "rotate": 90,
       "attrs": {}
     },
-    {
-      "type": "wokwi-lcd1602",
-      "id": "lcd",
-      "top": 265.6,
-      "left": 677.6,
-      "attrs": { "pins": "i2c" }
-    },
+    { "type": "wokwi-lcd1602", "id": "lcd", "top": 176.23, "left": 688, "attrs": {} },
     { "type": "wokwi-buzzer", "id": "buzzer", "top": 194.4, "left": 539.4, "attrs": {} },
     { "type": "wokwi-relay-module", "id": "relay", "top": 413, "left": 643.2, "attrs": {} },
     {
       "type": "wokwi-ntc-temperature-sensor",
       "id": "ntc-thermistor",
-      "top": 472.6,
+      "top": 482.2,
       "left": 643.2,
       "rotate": 180,
       "attrs": {}
@@ -50,7 +44,18 @@
     [ "relay:IN", "pico:GP28", "green", [ "h0" ] ],
     [ "ntc-thermistor:OUT", "pico:GP27", "green", [ "h0" ] ],
     [ "buzzer:1", "pico:GND.2", "green", [ "v9.6", "h-38.4" ] ],
-    [ "buzzer:2", "pico:GP2", "green", [ "v19.2", "h-10" ] ]
+    [ "buzzer:2", "pico:GP2", "green", [ "v19.2", "h-10" ] ],
+    [ "pico:GND.8", "lcd:VSS", "black", [ "v0" ] ],
+    [ "pico:VBUS", "lcd:VDD", "green", [ "v0" ] ],
+    [ "lcd:RS", "pico:GP16", "green", [ "v76.8", "h-335.7" ] ],
+    [ "lcd:RW", "pico:GND.8", "green", [ "v67.2", "h-182.5" ] ],
+    [ "lcd:E", "pico:GP17", "green", [ "v57.6", "h-345.6" ] ],
+    [ "pico:GP18", "lcd:D4", "green", [ "v39.6", "h19.2" ] ],
+    [ "pico:GP19", "lcd:D5", "green", [ "v30", "h374.4" ] ],
+    [ "pico:GP20", "lcd:D6", "green", [ "v20.4", "h374.4" ] ],
+    [ "pico:GP21", "lcd:D7", "green", [ "v10.8", "h393.6" ] ],
+    [ "lcd:K", "pico:GND.8", "green", [ "v86.4", "h-288" ] ],
+    [ "lcd:A", "pico:GP22", "green", [ "v134.4", "h-364.9" ] ]
   ],
   "dependencies": {}
 }

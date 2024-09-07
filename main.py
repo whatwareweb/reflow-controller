@@ -6,17 +6,30 @@ import uasyncio
 
 import ujson as json
 
-from lcd_api import LcdApi
-from pico_i2c_lcd import I2cLcd
+from LiquidCrystal import LiquidCrystal
+
 import keypad
 import hwtone
 
 #import network
 
-lcd_i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
-LCD_I2C_ADDR = lcd_i2c.scan()[0]
-lcd = I2cLcd(lcd_i2c, LCD_I2C_ADDR, 2, 16)
-lcd.clear()
+RS = 16
+ENABLE = 17
+D4 = 18
+D5 = 19
+D6 = 20
+D7 = 21
+BACK_LIGHT = machine.Pin(22,machine.Pin.OUT)
+
+def backlight_on():
+    BACK_LIGHT.value(1)
+    
+def backlight_off():
+    BACK_LIGHT.value(0)
+
+lcd = LiquidCrystal(RS, ENABLE, D4, D5, D6, D7)
+lcd.begin(16, 2)
+backlight_on()
 
 led = Pin("LED", Pin.OUT)
 
@@ -59,15 +72,15 @@ pos = 0
 cursor_pos = 0
 
 global process_status
-process_status = "profile_select"
+process_status = "main_menu"
 
 def draw_menu(l1text, l2text, cursor_position_draw):
-    lcd.move_to(0, cursor_position_draw)
-    lcd.putchar(">")
-    lcd.move_to(1, 0)
-    lcd.putstr(l1text)
-    lcd.move_to(1, 1)
-    lcd.putstr(l2text)
+    lcd.set_cursor(0, cursor_position_draw)
+    lcd.print(">")
+    lcd.set_cursor(1, 0)
+    lcd.print(l1text)
+    lcd.set_cursor(1, 1)
+    lcd.print(l2text)
 
 
 def menu_back():
@@ -100,8 +113,8 @@ def zfl(s, width):
 menu_functions = {
     "back": menu_back,
     "select_profile": select_profile,
-    "backlight_on": lcd.backlight_on,
-    "backlight_off": lcd.backlight_off,
+    "backlight_on": backlight_on,
+    "backlight_off": backlight_off,
     "clear_vars": clear_vars
 }
 
@@ -143,33 +156,33 @@ async def run_profile(profile):
         if (obj["type"] == "heat"):
             relay.on()
             lcd.clear()
-            lcd.move_to(0, 0)
-            lcd.putstr("Heating->")
-            lcd.putstr(str(obj["temp"]))
-            lcd.putstr("C")
+            lcd.set_cursor(0, 0)
+            lcd.print("Heating->")
+            lcd.print(str(obj["temp"]))
+            lcd.print("C")
             while ((1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15) < obj["temp"]):
-                lcd.move_to(0,1)
-                lcd.putstr(zfl(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)), 3))
-                lcd.putstr("C")
+                lcd.set_cursor(0,1)
+                lcd.print(zfl(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)), 3))
+                lcd.print("C")
                 await uasyncio.sleep_ms(0)
         if (obj["type"] == "hold"):
             start_time = time.time()
             lcd.clear()
-            lcd.move_to(0, 0)
-            lcd.putstr("Holding ")
-            lcd.putstr(zfl(str(obj["temp"]), 3))
-            lcd.putstr("C ")
-            lcd.move_to(5, 1)
-            lcd.putstr(zfl(str(obj["time"]), 3))
-            lcd.putstr("s")
+            lcd.set_cursor(0, 0)
+            lcd.print("Holding ")
+            lcd.print(zfl(str(obj["temp"]), 3))
+            lcd.print("C ")
+            lcd.set_cursor(5, 1)
+            lcd.print(zfl(str(obj["time"]), 3))
+            lcd.print("s")
             while (time.time() - start_time < obj["time"]):
                 current_temp = round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)
                 time_passed = time.time() - start_time
-                lcd.move_to(0,1)
-                lcd.putstr(zfl(str(current_temp), 3))
-                lcd.putstr("C")
-                lcd.move_to(5, 1)
-                lcd.putstr(zfl(str(obj["time"] - time_passed), 3))
+                lcd.set_cursor(0,1)
+                lcd.print(zfl(str(current_temp), 3))
+                lcd.print("C")
+                lcd.set_cursor(5, 1)
+                lcd.print(zfl(str(obj["time"] - time_passed), 3))
                 if (time_passed % 7 == 0):
                     print(current_temp)
                     print(obj["temp"])
@@ -183,20 +196,20 @@ async def run_profile(profile):
         if (obj["type"] == "cool"):
             relay.on()
             lcd.clear()
-            lcd.move_to(0, 0)
-            lcd.putstr("Cooling->")
-            lcd.putstr(str(obj["temp"]))
-            lcd.putstr("C")
+            lcd.set_cursor(0, 0)
+            lcd.print("Cooling->")
+            lcd.print(str(obj["temp"]))
+            lcd.print("C")
             while ((1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15) > obj["temp"]):
-                lcd.move_to(0,1)
-                lcd.putstr(zfl(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)), 3))
-                lcd.putstr("C")
+                lcd.set_cursor(0,1)
+                lcd.print(zfl(str(round(1 / (math.log(1 / (65535.0 / ntc.read_u16() - 1)) / ntc_beta + 1.0 / 298.15) - 273.15)), 3))
+                lcd.print("C")
                 await uasyncio.sleep_ms(0)
     
     relay.off()
     lcd.clear()
-    lcd.move_to(0, 0)
-    lcd.putstr("Reflow Complete")
+    lcd.set_cursor(0, 0)
+    lcd.print("Reflow Complete")
     buzzer_task = uasyncio.get_event_loop().create_task(hwtone.timer_buzzer())
     while True:
         await keypad.get_input()
@@ -227,10 +240,10 @@ async def profile_select_menu():
                     clear_vars()
                 else:
                     lcd.clear()
-                    lcd.move_to(0, 0)
-                    lcd.putstr(profiles[pos + cursor_pos]["name"])
-                    lcd.move_to(0, 1)
-                    lcd.putstr("A:Start, B:Exit")
+                    lcd.set_cursor(0, 0)
+                    lcd.print(profiles[pos + cursor_pos]["name"])
+                    lcd.set_cursor(0, 1)
+                    lcd.print("A:Start, B:Exit")
                     input = await keypad.get_input()
                     if (input == 'A'):
                         await run_profile(profiles[pos + cursor_pos]["profile"])
