@@ -1,6 +1,9 @@
 # reflow-controller
 pi pico project to control reflow oven
 
+![2024-09-28-22-27-19-705](https://github.com/user-attachments/assets/b7042d92-0be4-4d70-a5af-b0ec30e14ec4)
+
+
 This project is currently under very heavy development, so expect some bugs as of now while i do more testing
 
 ## how to use
